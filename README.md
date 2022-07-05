@@ -6,3 +6,9 @@
    ____) | |_| | |_) | | | |  __/ || (_| (_| | | (__ 
   |_____/ \__,_|_.__/|_| |_|\___|\__\___\__,_|_|\___|		
 ```
+## Set up dev environment
+### Clone the repo and add dependencies
+```sh
+git clone https://github.com/nguyendhst/subnetcalc.git
+go mod tidy
+```
