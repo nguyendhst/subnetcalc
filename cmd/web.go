@@ -67,7 +67,7 @@ var webCmd = &cobra.Command{
 
 func loadTemplates() {
 	for _, name := range templateName {
-		t, err := template.ParseFiles(templateDir + name)
+		t, err := template.ParseFiles(templateDir+"layout.html", templateDir+name)
 		if err != nil {
 			fmt.Println(err)
 			Halt(err)
@@ -78,7 +78,7 @@ func loadTemplates() {
 
 // DefaultHandler handles default request
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates["layout.html"].Execute(w, nil)
+	err := templates["index.html"].Execute(w, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		Halt(err)
