@@ -11,13 +11,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Subnet struct {
-	IP      string `json:"ip"`
-	Netmask string `json:"netmask"`
-	Network string `json:"network"`
-	Cidr    string `json:"cidr"`
-	Class   string `json:"class"`
+var Ipv4 string
+var Ipv6 string
+var v4Flag bool
+var v6Flag bool
+
+type SubnetInput struct {
+	Address string `json:"address"`
+	Prefix  string `json:"prefix"`
 }
+
+var Input SubnetInput = SubnetInput{}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -32,7 +36,13 @@ var rootCmd = &cobra.Command{
  `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		err := flagCheck()
+		if err != nil {
+			Halt(err)
+		}
+
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -51,6 +61,15 @@ func Halt(e error) {
 	}
 }
 
+func flagCheck() error {
+	if v4Flag && v6Flag {
+		return fmt.Errorf("only one IP address can be specified")
+	} else if !v4Flag && !v6Flag {
+		return fmt.Errorf("one IP address must be specified")
+	}
+	return nil
+}
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -61,4 +80,8 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//rootCmd.Flags().StringP("ip", "i", "", "IP address")
+	rootCmd.Flags().StringVarP(&Ipv4, "ipv4", "4", "", "IPv4 address with mask (192.168.1.1/24)")
+	rootCmd.Flags().StringVarP(&Ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3::8a2e:370:7334/64)")
+	v4Flag = rootCmd.Flags().Lookup("ipv4").Changed
+	v6Flag = rootCmd.Flags().Lookup("ipv6").Changed
 }

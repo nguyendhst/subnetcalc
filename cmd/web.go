@@ -55,7 +55,7 @@ var webCmd = &cobra.Command{
 				fmt.Println("Visit " + SERVER + ":" + PORT)
 			}
 		}()
-
+		// Temporary solution to handle server shutdown
 		waitSignal := make(chan os.Signal, 1)
 		signal.Notify(waitSignal, os.Interrupt)
 		sig := <-waitSignal
