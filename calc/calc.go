@@ -3,7 +3,98 @@ package calc
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 )
+
+const (
+	max32 uint32 = 2147483647
+)
+
+type IPInput interface {
+	Process() (IPResult, error)
+}
+
+type IPResult interface {
+	String()
+}
+
+func ProcessInput(inp IPInput) (IPResult, error) {
+	res, err := inp.Process()
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type IPv4 struct {
+	Addr string
+}
+
+type IPv6 struct {
+	Addr string
+}
+
+type IPv4Result struct {
+	Address        string `json:"address"`
+	Prefix         int    `json:"prefix"`
+	Mask           string `json:"mask"`
+	MaskBinary     string `json:"mask_binary"`
+	Wildcard       string `json:"wildcard"`
+	WildcardBinary string `json:"wildcard_binary"`
+}
+
+type IPv6Result struct {
+	Address     string `json:"address"`
+	FullAddress string `json:"full_address"`
+	TotalHost   int    `json:"total_host"`
+}
+
+func (ipv4 *IPv4) Process() (IPResult, error) {
+	ok, err := VerifyIPv4(ipv4.Addr)
+	if err != nil {
+		fmt.Println(err)
+		return IPv4Result{}, err
+	} else if !ok {
+		return IPv4Result{}, fmt.Errorf("invalid IPv4 address")
+	}
+	addr, k := Parse(ipv4.Addr)
+	if k < 0 {
+		return IPv4Result{}, fmt.Errorf("problem with parsing")
+	}
+	return CalcV4(addr, k), nil
+}
+
+func Parse(addr string) (string, int) {
+	re, err := regexp.Compile(`\/[0-9]*`)
+	if err != nil {
+		fmt.Println(err)
+	}
+	mask := re.FindStringSubmatch(addr)
+	if mask == nil {
+		return "", -1
+	}
+	prefix := mask[0][1:]
+	prefixInt, err := strconv.Atoi(prefix)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return addr[:len(addr)-len(prefix)], prefixInt
+}
+
+func (ipv6 *IPv6) Process() (IPResult, error) {
+	ok, err := VerifyIPv6(ipv6.Addr)
+	if err != nil {
+		fmt.Println(err)
+		return IPv6Result{}, err
+	} else if !ok {
+		return IPv6Result{}, fmt.Errorf("invalid IPv6 address")
+	}
+	addr, k := Parse(ipv6.Addr)
+	if k < 0 {
+		return IPv6Result{}, fmt.Errorf("problem with parsing")
+	}
+	return CalcV6(addr, k), nil
+}
 
 // VerifyIPv4 checks if the given IP is a valid IPv4 address with mask
 func VerifyIPv4(address string) (bool, error) {
@@ -23,4 +114,56 @@ func VerifyIPv6(address string) (bool, error) {
 		return false, err
 	}
 	return ipv6.MatchString(address), nil
+}
+
+func CalcV4(address string, prefix int) IPResult {
+	maskResult := maskV4(prefix)
+	return IPv4Result{
+		Address:        address,
+		Prefix:         prefix,
+		Mask:           maskResult[0],
+		MaskBinary:     maskResult[1],
+		Wildcard:       maskResult[2],
+		WildcardBinary: maskResult[3],
+	}
+}
+
+func maskV4(prefix int) []string {
+	if prefix == 32 {
+		return []string{
+			"255.255.255.255",
+			fmt.Sprintf("%8b. %8b. %8b. %8b", 255, 255, 255, 255),
+			"0",
+			fmt.Sprintf("%8b. %8b. %8b. %8b", 0, 0, 0, 0),
+		}
+	}
+	mask := max32 << uint32(32-prefix)
+	first := mask >> 24 & 0xff
+	second := mask >> 16 & 0xff
+	third := mask >> 8 & 0xff
+	fourth := mask & 0xff
+	return []string{
+		fmt.Sprintf("%d.%d.%d.%d", first, second, third, fourth),
+		fmt.Sprintf("%8b. %8b. %8b. %8b", first, second, third, fourth),
+		fmt.Sprintf("%d.%d.%d.%d", ^uint8(first), ^uint8(second), ^uint8(third), ^uint8(fourth)),
+		fmt.Sprintf("%8b. %8b. %8b. %8b", ^uint8(first), ^uint8(second), ^uint8(third), ^uint8(fourth)),
+	}
+}
+
+func CalcV6(address string, prefix int) IPResult {
+	return IPv6Result{
+		Address: address,
+	}
+}
+
+func (ipv4 IPv4Result) String() {
+	fmt.Printf("IPv4: \t\t\t%s%d\n", ipv4.Address, ipv4.Prefix)
+	fmt.Printf("Mask: \t\t\t%s\n", ipv4.Mask)
+	fmt.Printf("Mask Binary: \t\t%s\n", ipv4.MaskBinary)
+	fmt.Printf("Wildcard: \t\t%s\n", ipv4.Wildcard)
+	fmt.Printf("Wildcard Binary: %s\n", ipv4.WildcardBinary)
+}
+
+func (ipv6 IPv6Result) String() {
+	fmt.Printf("IPv6: %s/%s\n", ipv6.Address, ipv6.FullAddress)
 }

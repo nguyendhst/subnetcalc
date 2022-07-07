@@ -1,13 +1,10 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/nguyendhst/subnetcalc/calc"
 	"github.com/spf13/cobra"
 )
 
@@ -16,32 +13,34 @@ var Ipv6 string
 var v4Flag bool
 var v6Flag bool
 
-type SubnetInput struct {
-	Address string `json:"address"`
-	Prefix  string `json:"prefix"`
-}
-
-var Input SubnetInput = SubnetInput{}
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "subnetcalc",
 	Short: "A small utility to calculate subnet mask and related information",
-	Long: `    _____       _                _            _      
-   / ____|     | |              | |          | |     
-  | (___  _   _| |__  _ __   ___| |_ ___ __ _| | ___ 
-   \___ \| | | | '_ \| '_ \ / _ \ __/ __/ _\ | |/ __|
-   ____) | |_| | |_) | | | |  __/ || (_| (_| | | (__ 
-  |_____/ \__,_|_.__/|_| |_|\___|\__\___\__,_|_|\___|						 
- `,
+	Long:  logo,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
+		var input calc.IPInput
+		v4Flag = cmd.Flags().Lookup("ipv4").Changed
+		v6Flag = cmd.Flags().Lookup("ipv6").Changed
+
 		err := flagCheck()
 		if err != nil {
 			Halt(err)
 		}
 
+		if v4Flag {
+			input = &calc.IPv4{Addr: Ipv4}
+		} else {
+			input = &calc.IPv6{Addr: Ipv6}
+		}
+
+		res, err := calc.ProcessInput(input)
+		if err != nil {
+			Halt(err)
+		}
+		res.String()
 	},
 }
 
@@ -54,6 +53,7 @@ func Execute() {
 	}
 }
 
+// Halt prints error and exits
 func Halt(e error) {
 	if e != nil {
 		fmt.Println("Error:", e)
@@ -82,6 +82,12 @@ func init() {
 	//rootCmd.Flags().StringP("ip", "i", "", "IP address")
 	rootCmd.Flags().StringVarP(&Ipv4, "ipv4", "4", "", "IPv4 address with mask (192.168.1.1/24)")
 	rootCmd.Flags().StringVarP(&Ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3::8a2e:370:7334/64)")
-	v4Flag = rootCmd.Flags().Lookup("ipv4").Changed
-	v6Flag = rootCmd.Flags().Lookup("ipv6").Changed
 }
+
+var logo = `    _____       _                _            _      
+ / ____|     | |              | |          | |     
+| (___  _   _| |__  _ __   ___| |_ ___ __ _| | ___ 
+\___ \| | | | '_ \| '_ \ / _ \ __/ __/ _\ | |/ __|
+____) | |_| | |_) | | | |  __/ || (_| (_| | | (__ 
+|_____/ \__,_|_.__/|_| |_|\___|\__\___\__,_|_|\___|						 
+`
