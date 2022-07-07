@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	max32 uint32 = 2147483647
+	max32 uint32 = 4294967295
 )
 
 type IPInput interface {
@@ -132,9 +132,9 @@ func maskV4(prefix int) []string {
 	if prefix == 32 {
 		return []string{
 			"255.255.255.255",
-			fmt.Sprintf("%8b. %8b. %8b. %8b", 255, 255, 255, 255),
+			fmt.Sprintf("%08b. %08b. %08b. %08b", 255, 255, 255, 255),
 			"0",
-			fmt.Sprintf("%8b. %8b. %8b. %8b", 0, 0, 0, 0),
+			fmt.Sprintf("%08b. %08b. %08b. %08b", 0, 0, 0, 0),
 		}
 	}
 	mask := max32 << uint32(32-prefix)
@@ -144,9 +144,9 @@ func maskV4(prefix int) []string {
 	fourth := mask & 0xff
 	return []string{
 		fmt.Sprintf("%d.%d.%d.%d", first, second, third, fourth),
-		fmt.Sprintf("%8b. %8b. %8b. %8b", first, second, third, fourth),
+		fmt.Sprintf("%08b. %08b. %08b. %08b", first, second, third, fourth),
 		fmt.Sprintf("%d.%d.%d.%d", ^uint8(first), ^uint8(second), ^uint8(third), ^uint8(fourth)),
-		fmt.Sprintf("%8b. %8b. %8b. %8b", ^uint8(first), ^uint8(second), ^uint8(third), ^uint8(fourth)),
+		fmt.Sprintf("%08b. %08b. %08b. %08b", ^uint8(first), ^uint8(second), ^uint8(third), ^uint8(fourth)),
 	}
 }
 
@@ -161,7 +161,7 @@ func (ipv4 IPv4Result) String() {
 	fmt.Printf("Mask: \t\t\t%s\n", ipv4.Mask)
 	fmt.Printf("Mask Binary: \t\t%s\n", ipv4.MaskBinary)
 	fmt.Printf("Wildcard: \t\t%s\n", ipv4.Wildcard)
-	fmt.Printf("Wildcard Binary: %s\n", ipv4.WildcardBinary)
+	fmt.Printf("Wildcard Binary: \t%s\n", ipv4.WildcardBinary)
 }
 
 func (ipv6 IPv6Result) String() {
