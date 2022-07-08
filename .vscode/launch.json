@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["-4", "8.21.11.94/30"]
+            "args": ["-6", "2001:0db8:85a3:0a20:00e3:8a2e:0370:7334/56"]
         }
     ]
 }
