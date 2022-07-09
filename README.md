@@ -18,7 +18,7 @@ Available Commands:
 Flags:
   -h, --help          help for subnetcalc
   -4, --ipv4 string   IPv4 address with mask (192.168.1.1/24)
-  -6, --ipv6 string   IPv6 address with prefix (2001:db8:85a3::8a2e:370:7334/64)
+  -6, --ipv6 string   IPv6 address with prefix (2001:db8:85a3:0000:0000:8a2e:370:7334/64)
 
 Use "subnetcalc [command] --help" for more information about a command.		
 </pre>
