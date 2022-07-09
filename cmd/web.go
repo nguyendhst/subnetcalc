@@ -45,6 +45,7 @@ var webCmd = &cobra.Command{
 
 		rMux.HandleFunc("/", DefaultHandler)
 
+		// Start server in new goroutine to handle graceful shutdown
 		go func() {
 			fmt.Printf("Listening on %s:%s\n", SERVER, PORT)
 			err := s.ListenAndServe()

@@ -81,7 +81,7 @@ func init() {
 	// when this action is called directly.
 	//rootCmd.Flags().StringP("ip", "i", "", "IP address")
 	rootCmd.Flags().StringVarP(&Ipv4, "ipv4", "4", "", "IPv4 address with mask (192.168.1.1/24)")
-	rootCmd.Flags().StringVarP(&Ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3::8a2e:370:7334/64)")
+	rootCmd.Flags().StringVarP(&Ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3:0000:0000:8a2e:370:7334/64)")
 }
 
 var logo = `  _____       _                _            _      
