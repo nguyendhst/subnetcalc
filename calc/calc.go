@@ -11,14 +11,17 @@ const (
 	max32 uint32 = 0b11111111111111111111111111111111
 )
 
+// IPInput is the interface for all input types
 type IPInput interface {
 	Process() (IPResult, error)
 }
 
+// IPResult is the interface for all result types
 type IPResult interface {
 	String()
 }
 
+// ProcessInput processes the given IP input
 func ProcessInput(inp IPInput) (IPResult, error) {
 	res, err := inp.Process()
 	if err != nil {
@@ -27,14 +30,17 @@ func ProcessInput(inp IPInput) (IPResult, error) {
 	return res, nil
 }
 
+// IPv4 is the struct for IPv4 input
 type IPv4 struct {
 	Addr string
 }
 
+// IPv6 is the struct for IPv6 input
 type IPv6 struct {
 	Addr string
 }
 
+// IPv4Result is the struct for IPv4 result
 type IPv4Result struct {
 	Address        string `json:"address"`
 	Prefix         int    `json:"prefix"`
@@ -46,27 +52,29 @@ type IPv4Result struct {
 	Upper          string `json:"upper"`
 }
 
+// IPv6Result is the struct for IPv6 result
 type IPv6Result struct {
 	Address        string `json:"address"`
 	NetworkAddress string `json:"network_address"`
 }
 
+// Process processes the given IPv4 input
 func (ipv4 *IPv4) Process() (IPResult, error) {
-	ok, err := VerifyIPv4(ipv4.Addr)
+	ok, err := verifyIPv4(ipv4.Addr)
 	if err != nil {
 		fmt.Println(err)
 		return IPv4Result{}, err
 	} else if !ok {
 		return IPv4Result{}, fmt.Errorf("invalid IPv4 address")
 	}
-	addr, k := Parse(ipv4.Addr)
+	addr, k := parse(ipv4.Addr)
 	if k <= 0 {
 		return IPv4Result{}, fmt.Errorf("problem with parsing")
 	}
-	return CalcV4(addr, k), nil
+	return calcV4(addr, k), nil
 }
 
-func Parse(addr string) (string, int) {
+func parse(addr string) (string, int) {
 	re, err := regexp.Compile(`\/[0-9]*`)
 	if err != nil {
 		fmt.Println(err)
@@ -83,23 +91,24 @@ func Parse(addr string) (string, int) {
 	return addr[:len(addr)-len(prefix)-1], prefixInt
 }
 
+// Process processes the given IPv6 input
 func (ipv6 *IPv6) Process() (IPResult, error) {
-	ok, err := VerifyIPv6(ipv6.Addr)
+	ok, err := verifyIPv6(ipv6.Addr)
 	if err != nil {
 		fmt.Println(err)
 		return IPv6Result{}, err
 	} else if !ok {
 		return IPv6Result{}, fmt.Errorf("invalid IPv6 address")
 	}
-	addr, k := Parse(ipv6.Addr)
+	addr, k := parse(ipv6.Addr)
 	if k <= 0 {
 		return IPv6Result{}, fmt.Errorf("problem with parsing")
 	}
-	return CalcV6(addr, k), nil
+	return calcV6(addr, k), nil
 }
 
 // VerifyIPv4 checks if the given IP is a valid IPv4 address with mask
-func VerifyIPv4(address string) (bool, error) {
+func verifyIPv4(address string) (bool, error) {
 	ipv4, err := regexp.Compile(`^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/((0?[0-9])|([1-2][0-9])|(3[0-2]))$`)
 	if err != nil {
 		fmt.Println(err)
@@ -109,7 +118,7 @@ func VerifyIPv4(address string) (bool, error) {
 }
 
 // VerifyIPv6 checks if the given IP is a valid IPv6 address with mask
-func VerifyIPv6(address string) (bool, error) {
+func verifyIPv6(address string) (bool, error) {
 	ipv6, err := regexp.Compile(`^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(64|([1-5][0-9])|(6[0-4])|(0?[1-9]))$`)
 	if err != nil {
 		fmt.Println(err)
@@ -118,7 +127,7 @@ func VerifyIPv6(address string) (bool, error) {
 	return ipv6.MatchString(address), nil
 }
 
-func CalcV4(address string, prefix int) IPResult {
+func calcV4(address string, prefix int) IPResult {
 	maskResult := maskV4(address, prefix)
 	return IPv4Result{
 		Address:        address,
@@ -168,7 +177,7 @@ func ip4ToSlice(address string) []uint64 {
 	return result
 }
 
-func CalcV6(address string, prefix int) IPResult {
+func calcV6(address string, prefix int) IPResult {
 	arr := func(address string) []uint64 {
 		ip := strings.Split(address, ":")
 		result := make([]uint64, 8)
