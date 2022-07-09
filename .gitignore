@@ -16,7 +16,3 @@
 
 # For macOS
 .DS_Store
-
-go.sum
-go.mod
-
