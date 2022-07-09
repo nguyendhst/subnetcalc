@@ -5,6 +5,7 @@
    \___ \| | | | '_ \| '_ \ / _ \ __/ __/ _\ | |/ __|
    ____) | |_| | |_) | | | |  __/ || (_| (_| | | (__ 
   |_____/ \__,_|_.__/|_| |_|\___|\__\___\__,_|_|\___|
+```sh
 Usage:
   subnetcalc [flags]
   subnetcalc [command]
@@ -20,6 +21,7 @@ Flags:
   -6, --ipv6 string   IPv6 address with prefix (2001:db8:85a3::8a2e:370:7334/64)
 
 Use "subnetcalc [command] --help" for more information about a command.		
+```
 </pre>
 ## Set up dev environment
 ### Clone the repo and add dependencies
