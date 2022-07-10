@@ -63,13 +63,13 @@ func (ipv4 *IPv4) Process() (IPResult, error) {
 	ok, err := verifyIPv4(ipv4.Addr)
 	if err != nil {
 		fmt.Println(err)
-		return IPv4Result{}, err
+		return &IPv4Result{}, err
 	} else if !ok {
-		return IPv4Result{}, fmt.Errorf("invalid IPv4 address")
+		return &IPv4Result{}, fmt.Errorf("invalid IPv4 address")
 	}
 	addr, k := parse(ipv4.Addr)
 	if k <= 0 {
-		return IPv4Result{}, fmt.Errorf("problem with parsing")
+		return &IPv4Result{}, fmt.Errorf("problem with parsing")
 	}
 	return calcV4(addr, k), nil
 }
@@ -96,13 +96,13 @@ func (ipv6 *IPv6) Process() (IPResult, error) {
 	ok, err := verifyIPv6(ipv6.Addr)
 	if err != nil {
 		fmt.Println(err)
-		return IPv6Result{}, err
+		return &IPv6Result{}, err
 	} else if !ok {
-		return IPv6Result{}, fmt.Errorf("invalid IPv6 address")
+		return &IPv6Result{}, fmt.Errorf("invalid IPv6 address")
 	}
 	addr, k := parse(ipv6.Addr)
 	if k <= 0 {
-		return IPv6Result{}, fmt.Errorf("problem with parsing")
+		return &IPv6Result{}, fmt.Errorf("problem with parsing")
 	}
 	return calcV6(addr, k), nil
 }
@@ -129,7 +129,7 @@ func verifyIPv6(address string) (bool, error) {
 
 func calcV4(address string, prefix int) IPResult {
 	maskResult := maskV4(address, prefix)
-	return IPv4Result{
+	return &IPv4Result{
 		Address:        address,
 		Prefix:         prefix,
 		Mask:           maskResult[0],
@@ -203,16 +203,16 @@ func calcV6(address string, prefix int) IPResult {
 		}
 	}(arr, block, bitNum)
 
-	return IPv6Result{
+	return &IPv6Result{
 		Address:        res[0],
 		NetworkAddress: res[1],
 	}
 }
 
-func (ipv4 IPv4Result) String() {
+func (ipv4 *IPv4Result) String() {
 	fmt.Printf("IPv4: \t\t\t%s/%d\nMask: \t\t\t%s\nMask Binary: \t\t%s\nWildcard: \t\t%s\nWildcard Binary: \t%s\nLower Bound: \t\t%s\nUpper Bound: \t\t%s\n", ipv4.Address, ipv4.Prefix, ipv4.Mask, ipv4.MaskBinary, ipv4.Wildcard, ipv4.WildcardBinary, ipv4.Lower, ipv4.Upper)
 }
 
-func (ipv6 IPv6Result) String() {
+func (ipv6 *IPv6Result) String() {
 	fmt.Printf("IPv6: \t\t%s\nNetwork: \t%s\n", ipv6.Address, ipv6.NetworkAddress)
 }
