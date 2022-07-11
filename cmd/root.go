@@ -8,10 +8,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Ipv4 string
-var Ipv6 string
+var ipv4 string
+var ipv6 string
 var v4Flag bool
 var v6Flag bool
+
+// isV4 is alias for calc.VerifyIPv4
+var isV4 = calc.VerifyIPv4
+
+// isV6 is alias for calc.VerifyIPv6
+var isV6 = calc.VerifyIPv6
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -31,9 +37,17 @@ var rootCmd = &cobra.Command{
 		}
 
 		if v4Flag {
-			input = &calc.IPv4{Addr: Ipv4}
+			if ok, err := isV4(ipv4); ok && err == nil {
+				input = &calc.IPv4{Addr: ipv4}
+			} else {
+				Halt(err)
+			}
 		} else {
-			input = &calc.IPv6{Addr: Ipv6}
+			if ok, err := isV6(ipv6); ok && err == nil {
+				input = &calc.IPv6{Addr: ipv6}
+			} else {
+				Halt(err)
+			}
 		}
 
 		res, err := calc.ProcessInput(input)
@@ -80,8 +94,8 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//rootCmd.Flags().StringP("ip", "i", "", "IP address")
-	rootCmd.Flags().StringVarP(&Ipv4, "ipv4", "4", "", "IPv4 address with mask (192.168.1.1/24)")
-	rootCmd.Flags().StringVarP(&Ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3:0000:0000:8a2e:370:7334/64)")
+	rootCmd.Flags().StringVarP(&ipv4, "ipv4", "4", "", "IPv4 address with mask (192.168.1.1/24)")
+	rootCmd.Flags().StringVarP(&ipv6, "ipv6", "6", "", "IPv6 address with prefix (2001:db8:85a3:0000:0000:8a2e:370:7334/64)")
 }
 
 var logo = `  _____       _                _            _      

@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -17,14 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var PORT string
-var SERVER string
-
-// isV4 is alias for calc.VerifyIPv4
-var isV4 = calc.VerifyIPv4
-
-// isV6 is alias for calc.VerifyIPv6
-var isV6 = calc.VerifyIPv6
+var port string
+var server string
 
 var webCmd = &cobra.Command{
 	Use:   "web",
@@ -61,7 +51,7 @@ var webCmd = &cobra.Command{
 		})
 
 		srv := &http.Server{
-			Addr:    SERVER + ":" + PORT,
+			Addr:    server + ":" + port,
 			Handler: router,
 		}
 
@@ -103,6 +93,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	webCmd.Flags().StringVarP(&PORT, "port", "p", "63000", "Set port number")
-	webCmd.Flags().StringVarP(&SERVER, "server", "s", "127.0.0.1", "Set server address")
+	webCmd.Flags().StringVarP(&port, "port", "p", "63000", "Set port number")
+	webCmd.Flags().StringVarP(&server, "server", "s", "127.0.0.1", "Set server address")
 }

@@ -60,13 +60,6 @@ type IPv6Result struct {
 
 // Process processes the given IPv4 input
 func (ipv4 *IPv4) Process() (IPResult, error) {
-	ok, err := VerifyIPv4(ipv4.Addr)
-	if err != nil {
-		fmt.Println(err)
-		return &IPv4Result{}, err
-	} else if !ok {
-		return &IPv4Result{}, fmt.Errorf("invalid IPv4 address")
-	}
 	addr, k := parse(ipv4.Addr)
 	if k <= 0 {
 		return &IPv4Result{}, fmt.Errorf("problem with parsing")
@@ -93,13 +86,6 @@ func parse(addr string) (string, int) {
 
 // Process processes the given IPv6 input
 func (ipv6 *IPv6) Process() (IPResult, error) {
-	ok, err := VerifyIPv6(ipv6.Addr)
-	if err != nil {
-		fmt.Println(err)
-		return &IPv6Result{}, err
-	} else if !ok {
-		return &IPv6Result{}, fmt.Errorf("invalid IPv6 address")
-	}
 	addr, k := parse(ipv6.Addr)
 	if k <= 0 {
 		return &IPv6Result{}, fmt.Errorf("problem with parsing")
