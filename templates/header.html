@@ -1,3 +1,4 @@
+{{define "header.html"}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,8 +9,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.1/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <body class="p-2">
-        {{ block "body" . }} Content {{ end }}
-    </body>
   </head>
-</html>
+  <body>
+    <div class="container">
+      <br><br>
+{{end}}
