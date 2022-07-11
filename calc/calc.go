@@ -60,7 +60,7 @@ type IPv6Result struct {
 
 // Process processes the given IPv4 input
 func (ipv4 *IPv4) Process() (IPResult, error) {
-	ok, err := verifyIPv4(ipv4.Addr)
+	ok, err := VerifyIPv4(ipv4.Addr)
 	if err != nil {
 		fmt.Println(err)
 		return &IPv4Result{}, err
@@ -93,7 +93,7 @@ func parse(addr string) (string, int) {
 
 // Process processes the given IPv6 input
 func (ipv6 *IPv6) Process() (IPResult, error) {
-	ok, err := verifyIPv6(ipv6.Addr)
+	ok, err := VerifyIPv6(ipv6.Addr)
 	if err != nil {
 		fmt.Println(err)
 		return &IPv6Result{}, err
@@ -108,7 +108,7 @@ func (ipv6 *IPv6) Process() (IPResult, error) {
 }
 
 // VerifyIPv4 checks if the given IP is a valid IPv4 address with mask
-func verifyIPv4(address string) (bool, error) {
+func VerifyIPv4(address string) (bool, error) {
 	ipv4, err := regexp.Compile(`^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/((0?[0-9])|([1-2][0-9])|(3[0-2]))$`)
 	if err != nil {
 		fmt.Println(err)
@@ -118,7 +118,7 @@ func verifyIPv4(address string) (bool, error) {
 }
 
 // VerifyIPv6 checks if the given IP is a valid IPv6 address with mask
-func verifyIPv6(address string) (bool, error) {
+func VerifyIPv6(address string) (bool, error) {
 	ipv6, err := regexp.Compile(`^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(64|([1-5][0-9])|(6[0-4])|(0?[1-9]))$`)
 	if err != nil {
 		fmt.Println(err)
