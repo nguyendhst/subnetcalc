@@ -35,7 +35,8 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			Halt(err)
 		}
-
+		// Can further abstract with webinput structure (json) and cli input structure (string)
+		// which return IPInput
 		if v4Flag {
 			if ok, err := isV4(ipv4); ok && err == nil {
 				input = &calc.IPv4{Addr: ipv4}
